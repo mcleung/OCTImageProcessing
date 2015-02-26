@@ -1,12 +1,10 @@
+function [output] = ProcessSingleStack(fileNameList, dirName)
 % Process single stack into 16-bit TIF
 
-clearvars -except coords;
 close all;
 
 nPixelX = 860;
 nPixelY = 800;
-
-dirName = 'C:\Users\Livia\Dropbox\FF-OCT';
 
 if ~exist([dirName '\TIFS'],'dir')
     mkdir(dirName, 'TIFS');
@@ -18,8 +16,6 @@ elseif ~exist([dirName '\TIFS\Filtered'],'dir')
 elseif ~exist([dirName '\TIFS\Filtered\GaussBlur'], 'dir')
     mkdir([dirName '\TIFS\Filtered'],'GaussBlur');
 end
-
-fileNameList = {'D1E2_12_48_2vit', 'D1E2_13_48_3vit'};
 
 for ii = 1:length(fileNameList)
 
@@ -63,14 +59,11 @@ for ii = 1:length(fileNameList)
     figure, imagesc(sum(dataBackSub(:,:,10:end),3));
     
     % Step 2: auto adjust contrast / brightness, filter out noise
-    
     % define region in background to measure reference noise
     % coords = [xmin xmax ymin ymax]
     % use as data(ymin:ymax, xmin:xmax, i)
-    if ~exist('coords', 'var')
-        coords = getNoiseLocation(data);
-    end
-    
+    coords = getNoiseLocation(data);
+
     
     disp('Step 2: Adjust contrast/brightness');
     dataAdj = AdjCBFilt(dataBackSub, coords);
@@ -84,28 +77,23 @@ for ii = 1:length(fileNameList)
     disp('Step 3: Applying Gaussian Blur');
     dataGauss=gauss3d(dataAdj,sigmaX,sigmaY,sigmaZ);
     fprintf('\b'); disp(' - 100 % Complete');
-    fNameSave=[dirName '\TIFS\Filtered\' fileName];
-    
+
     % %% Write in file
     % save(fNameSave,'dataGauss');
-    % %dirData(j).dataGauss=dataGauss;
-    % %save('dataProcessed80.mat','dataGauss');
+    % dirData(j).dataGauss=dataGauss;
     %
     % write as tif stack, leave out dish surface
-    n = 5;
+    n = 3;
     dataAdj16 = uint16(dataAdj*65535);
+    % Save Gauss blurred stack
+    dataGauss16 = uint16(dataGauss*65535);
     
-    imwrite(dataAdj16(:,:,n), [fNameSave '.tif']);
+    imwrite(dataAdj16(:,:,n), [dirName '\TIFS\Filtered\' fileName '.tif']);
     
     for k = n+1:size(dataAdj,3)
-        imwrite(dataAdj16(:,:,k), [fNameSave '.tif'], ...
+        imwrite(dataAdj16(:,:,k), [dirName '\TIFS\Filtered\' fileName '.tif'], ...
             'writemode', 'append');
     end
-    
-    
-    % Save Gauss blurred stack
-    n = 5;
-    dataGauss16 = uint16(dataGauss*65535);
     
     imwrite(dataGauss16(:,:,n), [dirName '\TIFS\Filtered\GaussBlur\' fileName '.tif']);
     
@@ -116,4 +104,5 @@ for ii = 1:length(fileNameList)
     
     fprintf('\nDONE\n');
     
+end
 end
