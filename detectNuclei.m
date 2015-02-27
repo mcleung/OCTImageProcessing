@@ -56,10 +56,10 @@ for j = jList
     
     % keep only edges with moderate intensity values
     lowThresh = graythresh(slicesG(10:end-10,10:end-10));
-    edgesBright(edgesBright < lowThresh) = 0;
+    edgesBright(edgesBright < .8*lowThresh) = 0;
     
     highThresh = graythresh(edgesBright(edgesBright > 0));
-    edgesBright(edgesBright > highThresh) = 0;
+    edgesBright(edgesBright > 1.5*highThresh) = 0;
     
     edgesBright = imdilate(edgesBright, strel('disk', 5));
     %     figure, imshow(edgesBright);
@@ -85,8 +85,8 @@ for j = jList
             h = circle_hough(edgesBright, radii, 'same', 'normalise');
             
             % Find some peaks in the accumulator
-            nHoodXY = 31;
-            nHoodR = 31;
+            nHoodXY = 51;
+            nHoodR = 51;
             
             if numCells == 1
                 nPeaks = 4;

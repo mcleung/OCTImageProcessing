@@ -16,48 +16,40 @@
 clear all;
 close all;
 
-% add things to path
-addpath('C:\Users\Livia\Desktop\CommonMatlabFiles');
-addPathRecursive('.');
-
 micronsPerSlice = 1;
 XYpixelsPerSlice = 4.5*micronsPerSlice;
 
 % *************** CHANGE THIS IF NECESSARY *****************************
-filePath = 'C:\Users\Livia\Desktop\OCT\OCT data\SPIE_paper_data\group 2 (2PN vit)\GaussBlur 1-23-15';
-fileName = 'E11_14'; % 1,5,8,10
-embryoNum = num2str(12); 
-maxNoVit = 14;
-maxVit = 14;
+filePath = 'C:\Users\Michael\Dropbox\2014 SBO\2015-02-20 OCT fresh after fluo imaging';
+filePath = [filePath '\TIFS\Filtered\GaussBlur'];
+fileName = 'E1';
+embryoNum = num2str(1); 
+maxEmbryo = 14;
 % *********************************************************************
 
-groupNum = filePath(strfind(filePath, '\group ') + 7);
+DateIdx = regexp(filePath, '201[456]-'); %Returns index of location of 2014- 2015- or 2016-
+VitIdx = regexp(fileName, '[Vv]it');
+
+%groupNum = filePath(strfind(filePath, '\group ') + 7);
 currDate = filePath(strfind(filePath, '\GaussBlur ') + 11 : end);
 
-s = strfind(filePath, ' ');
-exptDate = filePath(s(end)+1:end);
+exptDate = filePath(DateIdx:DateIdx+9);
+
+if isempty(VitIdx)
+    groupNum = '0';
+else
+    groupNum = fileName(VitIdx-1);
+end
 
 % determine file to save in
-if (strcmp(exptDate, '3-27-14'))
-    fileToSave = 'embryoParams4.mat';
-elseif (strcmp(exptDate, '5-29-14'))
-    fileToSave = 'embryoParams5.mat';
-elseif (strcmp(exptDate, '1-14-14'))
-    fileToSave = 'embryoParams.mat';
-elseif (strcmp(exptDate, '12-4-13'))
-    fileToSave = 'embryoParams2.mat';
-elseif (strcmp(exptDate, '9-25-14'))
-    fileToSave = 'embryoParams6.mat';
-elseif (strcmp(exptDate, '8-14-14'))
-    fileToSave = 'embryoParams7.mat';
-elseif (strcmp(exptDate, '1-23-15'))
-    fileToSave = 'embryoParams8.mat';
+% determine file to save in
+if (strcmp(exptDate, '2015-02-20'))
+    fileToSave = 'eParam1.mat';
 else
-    fileToSave = 'embryoParams3.mat';
+    fileToSave = 'eParamLost.mat';
 end
 
 dataPath = [filePath '\' fileName '.tif'];
-%dataPath = [filePath '\E3.tif'];
 
 imInfo = imfinfo(dataPath);
 numImages = length(imInfo);
@@ -166,20 +158,17 @@ if exist(fileToSave, 'file')
     load(fileToSave);
 else
     
+    Group0 = struct();
     Group1 = struct();
-    
-    for i = 1:maxNoVit
-        fieldName = ['E' num2str(i)]
-        Group1.(fieldName) = struct();
-    end
-    
     Group2 = struct();
     
-    for i = 1:maxVit
+    for i = 1:maxEmbryo
         fieldName = ['E' num2str(i)]
+        Group0.(fieldName) = struct();
+        Group1.(fieldName) = struct();
         Group2.(fieldName) = struct();
     end
-    
+
 end
 
 % set date of current embryo
@@ -206,12 +195,13 @@ eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.yc = yCenter;']);
 eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.z = 1:numImages;']);
 eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.r = rFit;']);
 
-save(fileToSave, 'Group1', 'Group2');
+save(fileToSave, 'Group0', 'Group1', 'Group2');
 
 % Step 2.2 Return 3D mask of pixels to analyze for each slice
+embryoStruct = eval(['Group' num2str(groupNum) '.E' embryoNum]);
 
-[cellMask, minPNslice, maxPNslice] = findCytoplasmMask(cell3D, Group1, ...
-    Group2, groupNum, embryoNum, XYpixelsPerSlice, micronsPerSlice);
+[cellMask, minPNslice, maxPNslice] = findCytoplasmMask(cell3D, embryoStruct,...
+   XYpixelsPerSlice, micronsPerSlice);
 
 
 % Step 4: Extract "clumpiness" parameters
@@ -234,22 +224,10 @@ eval(['Group' num2str(groupNum) '.E' embryoNum '.sliceList = minPNslice+1:maxPNs
 eval(['Group' num2str(groupNum) '.E' embryoNum '.cell3D = cell3D;']);
 eval(['Group' num2str(groupNum) '.E' embryoNum '.cellMask = cellMask;']);
 
-save(fileToSave, 'Group1', 'Group2');
+save(fileToSave, 'Group0', 'Group1', 'Group2');
 
 close all;
-% figure, plot(eval(['Group' num2str(groupNum) '.' fileName '.sliceList']), ...
-%     eval(['100*Group' num2str(groupNum) '.' fileName '.stdev']));
-% hold on; 
-% plot(eval(['Group' num2str(groupNum) '.' fileName '.sliceList']), ...
-%     eval(['Group' num2str(groupNum) '.' fileName '.entropy']), 'r');
 
 round(minPNslice/2 + maxPNslice/2)
 figure, imshow(cellMask(:,:,round(minPNslice/2 + maxPNslice/2)) .* ...
     cell3D(:,:,round(minPNslice/2 + maxPNslice/2)));
-
-
-
-
-
-
-

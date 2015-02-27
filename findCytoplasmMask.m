@@ -4,12 +4,11 @@
 %   Group1, Group2, groupNum, fileName, XYpixelsPerSlice, micronsPerSlice)
 
 function [cellMask, minPNslice, maxPNslice] = findCytoplasmMask(cell3D, ...
-    Group1, Group2, groupNum, fileName, XYpixelsPerSlice, micronsPerSlice)
+    embryoStruct, XYpixelsPerSlice, micronsPerSlice)
 
 cellMask = 0*cell3D;
 cellMask = (cellMask == 1);
 
-embryoStruct = eval(['Group' num2str(groupNum) '.E' fileName]);
 rCell = embryoStruct.cellBody.r;
 
 % zc is in slices
@@ -80,21 +79,11 @@ for i = 1:size(cell3D,3)
         currMask = zeros(size(cell3D,1), size(cell3D,2));
         currMask((D0 < (rCell(i)+5)) & (D1 > (rList1(i))) ...
             & (D2 > (rList2(i)))) = 1;
-        
+       
         cellMask(:,:,i) = (currMask == 1);
 %         imshow(currMask);
 %         pause(1);
-        
+  
     end
-    
+
 end
-
-
-
-
-
-
-
-
-
-
