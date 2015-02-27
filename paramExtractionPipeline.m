@@ -22,14 +22,18 @@ XYpixelsPerSlice = 4.5*micronsPerSlice;
 % *************** CHANGE THIS IF NECESSARY *****************************
 filePath = 'C:\Users\Michael\Dropbox\2014 SBO\2015-02-20 OCT fresh after fluo imaging';
 filePath = [filePath '\TIFS\Filtered\GaussBlur'];
-fileName = 'E2';
-
+% FILE MUST BE IN FORM (D#E## #Vit)
+% The space is important after embro number and no space before vit.
+fileName = 'E7to10 1vit'; 
+%embryoNum = char(regexp(fileName, 'E\d+', 'match'));
+%embryoNum = embryoNum(2:end);
+embryoNum = num2str(7);
 maxEmbryo = 14;
 % *********************************************************************
 
 exptDate = char(regexp(filePath, '201[456]-\d+-\d+', 'match'));
 VitIdx = regexp(fileName, '[Vv]it');
-embryoNum = char(regexp(fileName, '\d+', 'match')); 
+
 %groupNum = filePath(strfind(filePath, '\group ') + 7);
 
 
@@ -40,7 +44,7 @@ else
 end
 
 % determine file to save in
-StructName = ['Group' num2str(groupNum) '.E' embryoNum]
+StructName = ['Group' groupNum '.E' embryoNum]
 
 
 if (strcmp(exptDate, '2015-02-20'))
@@ -226,7 +230,7 @@ eval(['Group' num2str(groupNum) '.E' embryoNum '.cellMask = cellMask;']);
 
 save(fileToSave, 'Group0', 'Group1', 'Group2');
 
-close all;
+%close all;
 
 round(minPNslice/2 + maxPNslice/2)
 figure, imshow(cellMask(:,:,round(minPNslice/2 + maxPNslice/2)) .* ...
