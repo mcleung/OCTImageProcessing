@@ -59,7 +59,7 @@ for j = jList
     edgesBright(edgesBright < .8*lowThresh) = 0;
     
     highThresh = graythresh(edgesBright(edgesBright > 0));
-    edgesBright(edgesBright > 1.5*highThresh) = 0;
+    edgesBright(edgesBright > 1.4*highThresh) = 0;
     
     edgesBright = imdilate(edgesBright, strel('disk', 5));
     %     figure, imshow(edgesBright);
@@ -85,8 +85,8 @@ for j = jList
             h = circle_hough(edgesBright, radii, 'same', 'normalise');
             
             % Find some peaks in the accumulator
-            nHoodXY = 51;
-            nHoodR = 51;
+            nHoodXY = 49;
+            nHoodR = 49;
             
             if numCells == 1
                 nPeaks = 4;

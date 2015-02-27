@@ -22,18 +22,16 @@ XYpixelsPerSlice = 4.5*micronsPerSlice;
 % *************** CHANGE THIS IF NECESSARY *****************************
 filePath = 'C:\Users\Michael\Dropbox\2014 SBO\2015-02-20 OCT fresh after fluo imaging';
 filePath = [filePath '\TIFS\Filtered\GaussBlur'];
-fileName = 'E1';
-embryoNum = num2str(1); 
+fileName = 'E2';
+
 maxEmbryo = 14;
 % *********************************************************************
 
-DateIdx = regexp(filePath, '201[456]-'); %Returns index of location of 2014- 2015- or 2016-
+exptDate = char(regexp(filePath, '201[456]-\d+-\d+', 'match'));
 VitIdx = regexp(fileName, '[Vv]it');
-
+embryoNum = char(regexp(fileName, '\d+', 'match')); 
 %groupNum = filePath(strfind(filePath, '\group ') + 7);
-currDate = filePath(strfind(filePath, '\GaussBlur ') + 11 : end);
 
-exptDate = filePath(DateIdx:DateIdx+9);
 
 if isempty(VitIdx)
     groupNum = '0';
@@ -42,7 +40,9 @@ else
 end
 
 % determine file to save in
-% determine file to save in
+StructName = ['Group' num2str(groupNum) '.E' embryoNum]
+
+
 if (strcmp(exptDate, '2015-02-20'))
     fileToSave = 'eParam1.mat';
 else
@@ -175,30 +175,30 @@ end
 % set (x,y,z,r) of pronuclei
 % set (xc,yc,z,r) of cell body, where z is a list of z coords and r = r(z)
 % (xc, yc) are in cartesian coords - to access matrix entry, use (yc, xc)
-eval(['Group' num2str(groupNum) '.E' embryoNum '.date = currDate;']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN1 = struct();']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN2 = struct();']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody = struct();']);
+eval([StructName '.date = exptDate;']);
+eval([StructName '.PN1 = struct();']);
+eval([StructName '.PN2 = struct();']);
+eval([StructName '.cellBody = struct();']);
 
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN1.xc = xcList(p(1,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN1.yc = ycList(p(1,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN1.zc = zcList(p(1,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN1.r = radList(p(1,1));']);
+eval([StructName '.PN1.xc = xcList(p(1,1));']);
+eval([StructName '.PN1.yc = ycList(p(1,1));']);
+eval([StructName '.PN1.zc = zcList(p(1,1));']);
+eval([StructName '.PN1.r = radList(p(1,1));']);
 
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN2.xc = xcList(p(2,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN2.yc = ycList(p(2,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN2.zc = zcList(p(2,1));']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.PN2.r = radList(p(2,1));']);
+eval([StructName '.PN2.xc = xcList(p(2,1));']);
+eval([StructName '.PN2.yc = ycList(p(2,1));']);
+eval([StructName '.PN2.zc = zcList(p(2,1));']);
+eval([StructName '.PN2.r = radList(p(2,1));']);
 
-eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.xc = xCenter;']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.yc = yCenter;']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.z = 1:numImages;']);
-eval(['Group' num2str(groupNum) '.E' embryoNum '.cellBody.r = rFit;']);
+eval([StructName '.cellBody.xc = xCenter;']);
+eval([StructName '.cellBody.yc = yCenter;']);
+eval([StructName '.cellBody.z = 1:numImages;']);
+eval([StructName '.cellBody.r = rFit;']);
 
 save(fileToSave, 'Group0', 'Group1', 'Group2');
 
 % Step 2.2 Return 3D mask of pixels to analyze for each slice
-embryoStruct = eval(['Group' num2str(groupNum) '.E' embryoNum]);
+embryoStruct = eval(StructName);
 
 [cellMask, minPNslice, maxPNslice] = findCytoplasmMask(cell3D, embryoStruct,...
    XYpixelsPerSlice, micronsPerSlice);
