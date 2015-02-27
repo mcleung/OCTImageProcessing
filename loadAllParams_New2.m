@@ -41,6 +41,7 @@ vitGroup{5} = [zeros(1,5) ones(1,10)]; % 5 non-vit and 10 vit from 5-29-14
 vitGroup{6} = [zeros(1,5) ones(1,12)]; % 5 non-vit and 12 vit from 9-25-14
 vitGroup{7} = [zeros(1,5) ones(1,5)]; % 5 non-vit and 5 vit from 8-14-14
 vitGroup{8} = [zeros(1,14) ones(1,14)]; % 1-14 non-vit (fresh, not slow frozen), and 1-14 post-vit
+vitGroup{9} = [zeros(1,10) ones(1,10)]; % 1-10 non-vit (fresh, not slow frozen), and 1-10 post-vit
 
 blastForm{1} = NaN*ones(1,10);
 blastForm{2} = NaN*ones(1,10);
@@ -50,6 +51,7 @@ blastForm{5} = floor([1 1 1 0 1 .6 1 1 1 0 .6 0 .6 1 1]); % .6 means very early 
 blastForm{6} = floor([1 0 0 0 1 1 1 1 0 1 0 1 1 0 .6 1 0]); % .6 means very early blast or unsure
 blastForm{7} = NaN*ones(1,10); % used for fluorescence imaging
 blastForm{8} = NaN*ones(1,28); % frozen down for more vit cycles
+blastForm{9} = NaN*ones(1,20);
 
 % manual evaluation of clumping
 % 1 = clump, 0 = no clump, 2 = can't tell
@@ -61,6 +63,7 @@ cellClump{5} = [1 1 0 1 1 0 1 1 1 1 1 0 1 1 1]; % 46-60
 cellClump{6} = [1 0 1 0 0 0 1 1 1 0 1 0 1 1 1 1 1]; % 61-77 
 cellClump{7} = [1 0 1 0 0 0 1 0 1 1]; % 78-87 
 cellClump{8} = [zeros(1,14) ones(1,14)]; % 88-101, and 102-115
+cellClump{9} = [zeros(1,10) ones(1,10)];
 
 fileNameAssoc{1} = 'embryoParams3.mat'; % 4-26-13 and 5-3-13
 fileNameAssoc{2} = 'embryoParams2.mat'; % 12-4-13
@@ -70,6 +73,7 @@ fileNameAssoc{5} = 'embryoParams5.mat'; % 5-29-14
 fileNameAssoc{6} = 'embryoParams6.mat'; % 9-25-14
 fileNameAssoc{7} = 'embryoParams7.mat'; % 8-14-14
 fileNameAssoc{8} = 'embryoParams8.mat'; % 1-23-15
+fileNameAssoc{9} = 'eParam1.mat'; % 2015-02-20
 
 dh7Mat = [];
 
@@ -85,10 +89,10 @@ for i = 1:length(exptsToLoad)
             j
             
             if j < (numNonVit + 1)
-                groupNum = 1;
+                groupNum = 0;
                 embryoNum = j;
             else
-                groupNum = 2;
+                groupNum = 1;
                 embryoNum = j - numNonVit;
             end
             

@@ -6,7 +6,7 @@
 clear all;
 close all;
 
-load('embryoParams3.mat');
+load('eParam1.mat');
 
 %% Plot
 
@@ -19,7 +19,7 @@ colorList = [0 0 1; ...
              .8 0 0; ...
              .6 .6 0];
 
-for i = 1:5
+for i = 1:10
     
     figure(99);
     hold on;

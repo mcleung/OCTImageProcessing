@@ -6,11 +6,11 @@
 % clear all;
 % close all;
 
-varToPlot = 'blastForm'; % blastForm, cellClump, or vitGroup
+varToPlot = 'vitGroup'; % blastForm, cellClump, or vitGroup
 posClass = 1;
 negClass = 1-posClass;
-exptsToLoad = [0 0 1 1 1 1];
-embryosInExpt = [10 10 10 15 15 17 10 28];
+exptsToLoad = [0 0 0 0 0 0 0 0 1];
+embryosInExpt = [10 10 10 15 15 17 10 28 20];
 [paramsOut, groundTruthOut] = loadAllParams_New2(exptsToLoad, varToPlot, posClass);
 
 vitGroupAll = groundTruthOut.vitGroup;
@@ -52,6 +52,11 @@ for i = 1:length(groundTruth)
             negLocs = round(negPeaks(end,1));
         end       
         
+        % check if empty, aka no peaks identified.
+        if isempty(posPeaks)
+            poslocs = [8 18];
+        else
+            
         if size(posPeaks,1) < 2 || size(posPeaks,1) > 3
             if size(posPeaks,1) == 1
                 if posPeaks(1) < 10
@@ -64,6 +69,7 @@ for i = 1:length(groundTruth)
             end
         else
             posLocs = round(posPeaks(end-1:end,1))';
+        end
         end
         
         if ~isempty(intersect(i, [56 72 76]))  
