@@ -17,6 +17,9 @@ $RECYCLE.BIN/
 # large data files
 *.mat
 
+#autosaves
+*.asv
+
 # Windows shortcuts
 *.lnk
 
