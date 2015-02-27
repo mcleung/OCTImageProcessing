@@ -11,7 +11,7 @@ posClass = 1;
 negClass = 1-posClass;
 exptsToLoad = [0 0 0 0 0 0 0 0 1];
 embryosInExpt = [10 10 10 15 15 17 10 28 20];
-[paramsOut, groundTruthOut] = loadAllParams_New2(exptsToLoad, varToPlot, posClass);
+[paramsOut, groundTruthOut] = loadAllParams_NewPreAlloc(exptsToLoad, varToPlot, posClass);
 
 vitGroupAll = groundTruthOut.vitGroup;
 blastFormAll = groundTruthOut.blastForm;
@@ -82,11 +82,11 @@ for i = 1:length(groundTruth)
 %         testParam3(i) = currProfile(posLocs(2)) - currProfile(negLocs)/rAvg;
         testParam3(i) = currDiff(6);
         
-        if groundTruth(i)
-            currColor = [0 0 1];
+        if groundTruth(i) % True
+            currColor = [0 0 1]; % Blue
             cProfile = [cProfile ; currProfile'];
         else
-            currColor = [1 0 0];
+            currColor = [1 0 0]; % Red
             hProfile = [hProfile ; currProfile'];
         end
         
@@ -169,7 +169,7 @@ vitGroup = groundTruthOut.vitGroup;
 
 % plot
 % close all;
-fig = figure; % & vitGroup == 1
+fig = figure(10); % & vitGroup == 1
 % scatter3(p1(groundTruth == posClass), p2(groundTruth == posClass), ...
 %     p3(groundTruth == posClass),  150, [0 0 .6], 'filled');
 % hold on;
